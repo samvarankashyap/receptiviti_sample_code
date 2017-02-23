@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-#
 import argparse
 import json
 import uuid
@@ -10,7 +9,7 @@ import pdb
 
 def v(verbose, text):
     if verbose:
-        print text
+        print(text)
 
 class Receptiviti():
     def __init__(self, server, api_key, api_secret, verbose=False):
@@ -62,6 +61,7 @@ class Receptiviti():
 
         return response.json()['_id']
 
+
     def delete_person(self, person_id):
         v(self.verbose, 'deleting person: {}'.format(person_id))
         headers = self._create_headers({'Content-Type': 'application/json', 'Accept': 'application/json'})
@@ -70,6 +70,7 @@ class Receptiviti():
         if response.status_code != 204:
             v(self.verbose, 'Http Response: {}'.format(response))
             raise Exception("deleting person failed!")
+
 
     def add_content(self, person_id, content):
         v(self.verbose, 'add content for {}'.format(person_id))
@@ -80,11 +81,10 @@ class Receptiviti():
         }
         response = requests.post('{}/api/person/{}/contents'.format(self.server, person_id), headers=headers,
                                  data=json.dumps(data))
-
         if response.status_code != 200:
             raise Exception("Adding content failed!")
-
         return response.json()['_id']
+
 
     def get_profile(self, person_id):
         v(self.verbose, 'get profile for {}'.format(person_id))
@@ -94,14 +94,15 @@ class Receptiviti():
             raise Exception("Get profile failed!")
         return response.json()
 
+
     def get_communication_recommendation(self, person_name, person_contents):
         person_id = self.get_person_id(person_name)
         if person_id is None:
             person_id = self.create_person(person_name)
         for content in person_contents:
             self.add_content(person_id, content)
-        pdb.set_trace()
         return self.get_profile(person_id)["communication_recommendation"]
+
 
 def get_liwc(content):
     server = "https://app.receptiviti.com"
@@ -116,5 +117,6 @@ def get_liwc(content):
     rtvi.delete_person(person_id)
     return liwc
 
-content = raw_input("enter content \n")
-print get_liwc(content)
+
+content = input("enter content \n")
+print(get_liwc(content))
